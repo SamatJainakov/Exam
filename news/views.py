@@ -21,13 +21,16 @@ class NewsListCreateAPIView(generics.ListCreateAPIView):
     ordering_fields = ['created', ]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.author.user)
+        serializer.save(author=self.request.user.author)
 
 
 class NewsRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
     permission_classes = [IsAuthorOrIsAuthenticated, ]
+
+    def get_queryset(self):
+        return super().get_queryset().filter(pk=self.kwargs['pk'])
 
 
 class CommentListCreateAPIView(generics.ListCreateAPIView):
